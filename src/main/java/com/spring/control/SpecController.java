@@ -1,16 +1,18 @@
 package com.spring.control;
 
+import com.spring.model.AccountBalance;
 import com.spring.model.ExternalAccount;
 import com.spring.model.InternalAccount;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class SpecController {
@@ -21,7 +23,7 @@ public class SpecController {
     }
 
     @GetMapping(value = "accounts/internal", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get internal account information, if account name not specified return all available accounts",
+    @ApiOperation(value = "Get internal account information. If account name is not specified, return all available accounts.",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<InternalAccount> getInternalAccount(@RequestParam(value = "accountName", required = false) String accountName) {
         ArrayList<InternalAccount> resultList = new ArrayList<>();
@@ -36,7 +38,7 @@ public class SpecController {
     }
 
     @GetMapping(value = "accounts/external", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get external account information by account name. if account name not present, return all",
+    @ApiOperation(value = "Get external account information. If account name is not specified, return all available accounts.",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ExternalAccount> getExternalAccount(@RequestParam(value = "accountName", required = false) String accountName) {
         ArrayList<ExternalAccount> resultList = new ArrayList<>();
@@ -48,6 +50,24 @@ public class SpecController {
             resultList.add(createExternalAccount(accountName));
         }
         return resultList;
+    }
+
+    @GetMapping(value = "account_balance", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get external account information. If account name is not specified, return all available accounts.",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<AccountBalance> getAccountBalance(@RequestParam(value = "accountName", required = false) String accountName,
+                                                  @RequestParam(value = "instrument", required = false) String instrument)
+    {
+        ArrayList<AccountBalance> resultList = new ArrayList<>();
+        if(accountName == null) {
+            for(int i=0; i < 10; i++) {
+                resultList.add(createAccountBalance(String.format("S%d .BTCUSDT@BINANCE", i)));
+            }
+        } else {
+            resultList.add(createAccountBalance(accountName));
+        }
+        return resultList;
+
     }
 
     private InternalAccount createInternalAccount(String accountName) {
@@ -66,6 +86,14 @@ public class SpecController {
         res.setAccountName(accountName);
         res.setType("EXCHANGE");
         res.setExchangeAssociation("BINANCE");
+        return res;
+    }
+
+    private AccountBalance createAccountBalance(String accountName) {
+        AccountBalance res = new AccountBalance();
+        res.setAccountName(accountName);
+        res.setInstruments(Map.of("USD", new BigDecimal(100.0), "BNB", new BigDecimal(9.99)));
+        res.setType("TRADING");
         return res;
     }
 
