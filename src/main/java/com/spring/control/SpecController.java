@@ -53,7 +53,7 @@ public class SpecController {
     }
 
     @GetMapping(value = "account_balance", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get external account information. If account name is not specified, return all available accounts.",
+    @ApiOperation(value = "Get account balance. If account name is not specified, return all available accounts.",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<AccountBalance> getAccountBalance(@RequestParam(value = "accountName", required = false) String accountName,
                                                   @RequestParam(value = "instrument", required = false) String instrument)
