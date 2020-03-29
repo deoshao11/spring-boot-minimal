@@ -44,7 +44,7 @@ public class SpecController {
         ArrayList<ExternalAccount> resultList = new ArrayList<>();
         if(accountName == null) {
             for(int i=0; i < 10; i++) {
-                resultList.add(createExternalAccount(String.format("S%d .BTCUSDT@BINANCE", i)));
+                resultList.add(createExternalAccount(String.format("BINANCE. sub%d . margin", i)));
             }
         } else {
             resultList.add(createExternalAccount(accountName));
