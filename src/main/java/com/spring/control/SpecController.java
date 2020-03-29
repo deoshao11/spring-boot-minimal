@@ -74,7 +74,7 @@ public class SpecController {
         InternalAccount res = new InternalAccount();
         res.setAccountName(accountName);
         res.setChildren(new ArrayList<>());
-        res.setExternalAssociation("BINANCE. sub2");
+        res.setExternalAccountAssociation("BINANCE. sub2");
         res.setProductAssociation("BTCUSDT");
         res.setSourceId("BINANCE HYBRID 1");
         res.setType("TRADING");

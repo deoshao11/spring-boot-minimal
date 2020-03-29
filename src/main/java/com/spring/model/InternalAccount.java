@@ -16,6 +16,6 @@ public class InternalAccount {
 
     String productAssociation;
 
-    String externalAssociation;
+    String externalAccountAssociation;
 
 }
