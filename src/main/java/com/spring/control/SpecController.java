@@ -55,7 +55,7 @@ public class SpecController {
         setNumbers(userName);
 
         if(accountName == null) {
-            for(int i=0; i < 10; i++) {
+            for(int i=start; i < end; i++) {
                 resultList.add(createExternalAccount(String.format("BINANCE. sub%d . margin", i)));
             }
         } else {
@@ -76,7 +76,7 @@ public class SpecController {
         setNumbers(userName);
 
         if(accountName == null) {
-            for(int i=0; i < 10; i++) {
+            for(int i=start; i < end; i++) {
                 resultList.add(createAccountBalance(String.format("S%d .BTCUSDT@BINANCE", i)));
             }
         } else {
@@ -89,13 +89,15 @@ public class SpecController {
     private void setNumbers(String userName) {
         start = 0;
         end = 0;
-        if (userName == "lonk.admin") {
+
+        if(userName == null) return;
+        else if (userName.equals("lonk.admin")) {
             start = 0;
             end = 10;
-        } else if (userName == "lonk.user1") {
+        } else if (userName.equals("lonk.user1")) {
             start = 0;
             end = 5;
-        } else if (userName == "lonk.user2") {
+        } else if (userName.equals("lonk.user2")) {
             start = 5;
             end = 10;
         }
