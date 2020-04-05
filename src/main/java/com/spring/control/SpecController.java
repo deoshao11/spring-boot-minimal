@@ -6,6 +6,7 @@ import com.spring.model.InternalAccount;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,6 +18,9 @@ import java.util.Map;
 @RestController
 public class SpecController {
 
+    int start = 0;
+    int end = 0;
+
     @GetMapping("/")
     public String getGreeting() {
         return "Greetings from Spring Boot!";
@@ -25,10 +29,14 @@ public class SpecController {
     @GetMapping(value = "accounts/internal", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get internal account information. If account name is not specified, return all available accounts.",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<InternalAccount> getInternalAccount(@RequestParam(value = "accountName", required = false) String accountName) {
+    public List<InternalAccount> getInternalAccount(@RequestParam(value = "accountName", required = false) String accountName,
+                                                    @RequestHeader(value = "x-username", required = false) String userName) {
         ArrayList<InternalAccount> resultList = new ArrayList<>();
+
+        setNumbers(userName);
+
         if(accountName == null) {
-            for (int i = 0; i < 10; i++) {
+            for (int i = start; i < end; i++) {
                 resultList.add(createInternalAccount(String.format("S%d .BTCUSDT@BINANCE", i)));
             }
         } else {
@@ -40,8 +48,12 @@ public class SpecController {
     @GetMapping(value = "accounts/external", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get external account information. If account name is not specified, return all available accounts.",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ExternalAccount> getExternalAccount(@RequestParam(value = "accountName", required = false) String accountName) {
+    public List<ExternalAccount> getExternalAccount(@RequestParam(value = "accountName", required = false) String accountName,
+                                                    @RequestHeader(value = "x-username", required = false) String userName) {
         ArrayList<ExternalAccount> resultList = new ArrayList<>();
+
+        setNumbers(userName);
+
         if(accountName == null) {
             for(int i=0; i < 10; i++) {
                 resultList.add(createExternalAccount(String.format("BINANCE. sub%d . margin", i)));
@@ -56,9 +68,13 @@ public class SpecController {
     @ApiOperation(value = "Get account balance. If account name is not specified, return all available accounts.",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<AccountBalance> getAccountBalance(@RequestParam(value = "accountName", required = false) String accountName,
-                                                  @RequestParam(value = "instrument", required = false) String instrument)
+                                                  @RequestParam(value = "instrument", required = false) String instrument,
+                                                  @RequestHeader(value = "x-username", required = false) String userName)
     {
         ArrayList<AccountBalance> resultList = new ArrayList<>();
+
+        setNumbers(userName);
+
         if(accountName == null) {
             for(int i=0; i < 10; i++) {
                 resultList.add(createAccountBalance(String.format("S%d .BTCUSDT@BINANCE", i)));
@@ -68,6 +84,21 @@ public class SpecController {
         }
         return resultList;
 
+    }
+
+    private void setNumbers(String userName) {
+        start = 0;
+        end = 0;
+        if (userName == "lonk.admin") {
+            start = 0;
+            end = 10;
+        } else if (userName == "lonk.user1") {
+            start = 0;
+            end = 5;
+        } else if (userName == "lonk.user2") {
+            start = 5;
+            end = 10;
+        }
     }
 
     private InternalAccount createInternalAccount(String accountName) {
