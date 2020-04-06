@@ -37,16 +37,10 @@ public class SpecController {
     @ApiOperation(value = "Get internal account information. If account name is not specified, return all available accounts.",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<InternalAccount> getInternalAccount(@RequestParam(value = "accountName", required = false) String accountName,
-                                                    @RequestHeader(value = "x-username", required = false) String userName,
                                                     @RequestHeader(value = "x-encrypted-username", required = false) String encryptedUserName) {
         ArrayList<InternalAccount> resultList = new ArrayList<>();
 
-        setNumbers(userName);
-
-        String decryptedUsername = decryptUserUuid(encryptedUserName);
-
-        System.out.println("Decrypted user name: " + decryptedUsername);
-
+        setNumbers(decryptUserName(encryptedUserName));
 
         if(accountName == null) {
             for (int i = start; i < end; i++) {
@@ -62,15 +56,10 @@ public class SpecController {
     @ApiOperation(value = "Get external account information. If account name is not specified, return all available accounts.",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ExternalAccount> getExternalAccount(@RequestParam(value = "accountName", required = false) String accountName,
-                                                    @RequestHeader(value = "x-username", required = false) String userName,
                                                     @RequestHeader(value = "x-encrypted-username", required = false) String encryptedUserName) {
         ArrayList<ExternalAccount> resultList = new ArrayList<>();
 
-        setNumbers(userName);
-
-        String decryptedUsername = decryptUserUuid(encryptedUserName);
-
-        System.out.println("Decrypted user name: " + decryptedUsername);
+        setNumbers(decryptUserName(encryptedUserName));
 
         if(accountName == null) {
             for(int i=start; i < end; i++) {
@@ -87,16 +76,11 @@ public class SpecController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<AccountBalance> getAccountBalance(@RequestParam(value = "accountName", required = false) String accountName,
                                                   @RequestParam(value = "instrument", required = false) String instrument,
-                                                  @RequestHeader(value = "x-username", required = false) String userName,
                                                   @RequestHeader(value = "x-encrypted-username", required = false) String encryptedUserName)
     {
         ArrayList<AccountBalance> resultList = new ArrayList<>();
 
-        setNumbers(userName);
-
-        String decryptedUsername = decryptUserUuid(encryptedUserName);
-
-        System.out.println("Decrypted user name: " + decryptedUsername);
+        setNumbers(decryptUserName(encryptedUserName));
 
         if(accountName == null) {
             for(int i=start; i < end; i++) {
@@ -153,10 +137,10 @@ public class SpecController {
         return res;
     }
 
-    private String decryptUserUuid(String userUuid) {
+    private String decryptUserName(String userName) {
         try {
-            return new String(Base64.getDecoder().decode(
-                    cipher.doFinal(userUuid.getBytes(StandardCharsets.UTF_8))), StandardCharsets.UTF_8);
+            byte[] encrypted_decoded_bytes = Base64.getDecoder().decode(userName);
+            return new String(cipher.doFinal(encrypted_decoded_bytes), StandardCharsets.UTF_8);
         } catch (Exception e) {
             return "";
         }
