@@ -4,14 +4,18 @@ import com.spring.model.AccountBalance;
 import com.spring.model.ExternalAccount;
 import com.spring.model.InternalAccount;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.crypto.Cipher;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +24,9 @@ public class SpecController {
 
     int start = 0;
     int end = 0;
+
+    @Autowired
+    Cipher cipher;
 
     @GetMapping("/")
     public String getGreeting() {
@@ -30,10 +37,16 @@ public class SpecController {
     @ApiOperation(value = "Get internal account information. If account name is not specified, return all available accounts.",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<InternalAccount> getInternalAccount(@RequestParam(value = "accountName", required = false) String accountName,
-                                                    @RequestHeader(value = "x-username", required = false) String userName) {
+                                                    @RequestHeader(value = "x-username", required = false) String userName,
+                                                    @RequestHeader(value = "x-encrypted-username", required = false) String encryptedUserName) {
         ArrayList<InternalAccount> resultList = new ArrayList<>();
 
         setNumbers(userName);
+
+        String decryptedUsername = decryptUserUuid(encryptedUserName);
+
+        System.out.println("Decrypted user name: " + decryptedUsername);
+
 
         if(accountName == null) {
             for (int i = start; i < end; i++) {
@@ -49,10 +62,15 @@ public class SpecController {
     @ApiOperation(value = "Get external account information. If account name is not specified, return all available accounts.",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ExternalAccount> getExternalAccount(@RequestParam(value = "accountName", required = false) String accountName,
-                                                    @RequestHeader(value = "x-username", required = false) String userName) {
+                                                    @RequestHeader(value = "x-username", required = false) String userName,
+                                                    @RequestHeader(value = "x-encrypted-username", required = false) String encryptedUserName) {
         ArrayList<ExternalAccount> resultList = new ArrayList<>();
 
         setNumbers(userName);
+
+        String decryptedUsername = decryptUserUuid(encryptedUserName);
+
+        System.out.println("Decrypted user name: " + decryptedUsername);
 
         if(accountName == null) {
             for(int i=start; i < end; i++) {
@@ -69,11 +87,16 @@ public class SpecController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public List<AccountBalance> getAccountBalance(@RequestParam(value = "accountName", required = false) String accountName,
                                                   @RequestParam(value = "instrument", required = false) String instrument,
-                                                  @RequestHeader(value = "x-username", required = false) String userName)
+                                                  @RequestHeader(value = "x-username", required = false) String userName,
+                                                  @RequestHeader(value = "x-encrypted-username", required = false) String encryptedUserName)
     {
         ArrayList<AccountBalance> resultList = new ArrayList<>();
 
         setNumbers(userName);
+
+        String decryptedUsername = decryptUserUuid(encryptedUserName);
+
+        System.out.println("Decrypted user name: " + decryptedUsername);
 
         if(accountName == null) {
             for(int i=start; i < end; i++) {
@@ -128,6 +151,15 @@ public class SpecController {
         res.setInstruments(Map.of("USD", new BigDecimal(100.0), "BNB", new BigDecimal(9.99)));
         res.setType("TRADING");
         return res;
+    }
+
+    private String decryptUserUuid(String userUuid) {
+        try {
+            return new String(Base64.getDecoder().decode(
+                    cipher.doFinal(userUuid.getBytes(StandardCharsets.UTF_8))), StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            return "";
+        }
     }
 
 }
