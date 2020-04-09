@@ -18,4 +18,6 @@ public class InternalAccount {
 
     String externalAccountAssociation;
 
+    Boolean isChildAccount;
+
 }

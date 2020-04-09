@@ -14,10 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.crypto.Cipher;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 public class SpecController {
@@ -44,10 +41,11 @@ public class SpecController {
 
         if(accountName == null) {
             for (int i = start; i < end; i++) {
-                resultList.add(createInternalAccount(String.format("S%d .BTCUSDT@BINANCE", i)));
+                resultList.add(createInternalAccount(String.format("Internal Account %d", i),false));
+                resultList.add(createInternalAccount(String.format("Internal Account %d Child", i), true));
             }
         } else {
-            resultList.add(createInternalAccount(accountName));
+            resultList.add(createInternalAccount(accountName, false));
         }
         return resultList;
     }
@@ -84,7 +82,9 @@ public class SpecController {
 
         if(accountName == null) {
             for(int i=start; i < end; i++) {
-                resultList.add(createAccountBalance(String.format("S%d .BTCUSDT@BINANCE", i)));
+                resultList.add(createAccountBalance(String.format("Internal Account %d", i)));
+                resultList.add(createAccountBalance(String.format("Internal Account %d Child", i)));
+                resultList.add(createAccountBalance(String.format("External Account %d", i)));
             }
         } else {
             resultList.add(createAccountBalance(accountName));
@@ -110,7 +110,7 @@ public class SpecController {
         }
     }
 
-    private InternalAccount createInternalAccount(String accountName) {
+    private InternalAccount createInternalAccount(String accountName, Boolean isChildAccount) {
         InternalAccount res = new InternalAccount();
         res.setAccountName(accountName);
         res.setChildren(new ArrayList<>());
@@ -118,6 +118,13 @@ public class SpecController {
         res.setProductAssociation("BTCUSDT");
         res.setSourceId("BINANCE HYBRID 1");
         res.setType("TRADING");
+        if(isChildAccount) {
+            res.setChildren(new ArrayList<>());
+            res.setIsChildAccount(true);
+        } else {
+            res.setChildren(Arrays.asList(accountName+" Child"));
+            res.setIsChildAccount(false);
+        }
         return res;
     }
 
