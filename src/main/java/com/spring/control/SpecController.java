@@ -61,7 +61,7 @@ public class SpecController {
 
         if(accountName == null) {
             for(int i=start; i < end; i++) {
-                resultList.add(createExternalAccount(String.format("BINANCE. sub%d . margin", i)));
+                resultList.add(createExternalAccount(String.format("External account %d", i)));
             }
         } else {
             resultList.add(createExternalAccount(accountName));
