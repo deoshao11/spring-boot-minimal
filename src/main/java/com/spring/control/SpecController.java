@@ -120,10 +120,10 @@ public class SpecController {
         res.setType("TRADING");
         if(isChildAccount) {
             res.setChildren(new ArrayList<>());
-            res.setIsChildAccount(true);
+            res.setHasParents(true);
         } else {
             res.setChildren(Arrays.asList(accountName+" Child"));
-            res.setIsChildAccount(false);
+            res.setHasParents(false);
         }
         return res;
     }
