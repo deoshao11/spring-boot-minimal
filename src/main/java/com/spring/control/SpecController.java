@@ -1,16 +1,11 @@
 package com.spring.control;
 
-import com.spring.model.AccountBalance;
-import com.spring.model.ExternalAccount;
-import com.spring.model.InternalAccount;
-import com.spring.model.Transfer;
+import com.spring.model.*;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import javax.crypto.Cipher;
 import java.math.BigDecimal;
@@ -30,6 +25,17 @@ public class SpecController {
     @GetMapping("/")
     public String getGreeting() {
         return "Greetings from Spring Boot!";
+    }
+
+    @PostMapping(value= "transfer", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get transfer information. If ID is not specified, return all available transfers.",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public Transfer createTransfer(@RequestBody @Validated RequestTransferInput request) {
+        Transfer result = new Transfer();
+        result.setId(BigInteger.valueOf(1234567));
+        result.setStatus("success");
+        result.setMsg("");
+        return result;
     }
 
     @GetMapping(value = "transfer", produces = MediaType.APPLICATION_JSON_VALUE)
