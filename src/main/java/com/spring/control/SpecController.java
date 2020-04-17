@@ -3,6 +3,7 @@ package com.spring.control;
 import com.spring.model.AccountBalance;
 import com.spring.model.ExternalAccount;
 import com.spring.model.InternalAccount;
+import com.spring.model.Transfer;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.crypto.Cipher;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -28,6 +30,27 @@ public class SpecController {
     @GetMapping("/")
     public String getGreeting() {
         return "Greetings from Spring Boot!";
+    }
+
+    @GetMapping(value = "transfer", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Get transfer information. If ID is not specified, return all available transfers.",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Transfer> getTransfer(@RequestParam(value = "startTime", required = true) BigInteger startTime,
+                                      @RequestParam(value = "endTime", required = true) BigInteger endTime) {
+        ArrayList<Transfer> resultList = new ArrayList<>();
+        Transfer one = new Transfer();
+        one.setId(BigInteger.valueOf(1234567));
+        one.setStatus("success");
+        one.setMsg("");
+        one.setTime(startTime);
+        resultList.add(one);
+        Transfer two = new Transfer();
+        two.setId(BigInteger.valueOf(567898));
+        two.setStatus("failed");
+        two.setMsg("invalid parameter");
+        two.setTime(endTime);
+        resultList.add(two);
+        return resultList;
     }
 
     @GetMapping(value = "accounts/internal", produces = MediaType.APPLICATION_JSON_VALUE)
